@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">Orgs</string>
+    <string name="cesta_de_frutas">Cesta de Frutas</string>
+    <string name="laranja_manga_e_uva">Laranja, manga e uva</string>
+    <string name="title_activity_formulario_produto">FormularioProdutoActivity</string>
+    <string name="nome">Nome</string>
+    <string name="descricao">Descrição</string>
+    <string name="valor">Valor</string>
+    <string name="salvar">Salvar</string>
+    <string name="frutas">Frutas</string>
+    <string name="novo_produto">novo produto</string>
+    <string name="Nome">Nome</string>
+    <string name="frutas_diversas">Frutas diversas</string>
+    <string name="Descricao">Descrição</string>
+    <string name="Valor">Valor</string>
+    <string name="carregar">Carregar</string>
+    <string name="Carregar">Carregar</string>
+    <string name="url_da_imagem">URL da imagem</string>
+    <string name="fundo_da_lista_de_produtos">fundo da lista de produtos</string>
+    <string name="imagem_do_produto">Imagem do produto</string>
+    <string name="fundo_da_tela">Fundo da tela</string>
+    <string name="botao_novo_produto">Botão Novo Produto</string>
+    <string name="cadastrar_produto">Cadastrar produto</string>
+    <string name="imagem_do_produto_layout">Imagem do produto</string>
+</resources>
