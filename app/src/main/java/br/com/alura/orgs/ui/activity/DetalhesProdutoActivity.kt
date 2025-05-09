@@ -1,12 +1,16 @@
 package br.com.alura.orgs.ui.activity
+
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import br.com.alura.orgs.databinding.ActivityDetalhesProdutoBinding
 import br.com.alura.orgs.extensions.formataParaMoedaBrasileira
 import br.com.alura.orgs.extensions.tentaCarregarImagem
 import br.com.alura.orgs.model.Produto
+
+private const val TAG = "DetalhesProduto"
 
 class DetalhesProdutoActivity : AppCompatActivity() {
 
@@ -18,14 +22,19 @@ class DetalhesProdutoActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+
         tentaCarregarProduto()
+
+        binding.botaoEditar.setOnClickListener {
+            Log.i(TAG, "Clique no botão Editar")
+        }
+        binding.botaoRemover.setOnClickListener {
+            Log.i(TAG, "Clique no botão Remover")
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun tentaCarregarProduto() {
-        // tentativa de buscar o produto se ele existir,
-        // caso contrário, finalizar a Activity
-
         intent.getParcelableExtra(CHAVE_PRODUTO, Produto::class.java)?.let { produtoCarregado ->
             preencheCampos(produtoCarregado)
         } ?: finish()
@@ -36,9 +45,8 @@ class DetalhesProdutoActivity : AppCompatActivity() {
             activityDetalhesProdutoImagem.tentaCarregarImagem(produtoCarregado.imagem)
             activityDetalhesProdutoNome.text = produtoCarregado.nome
             activityDetalhesProdutoDescricao.text = produtoCarregado.descricao
-            activityDetalhesProdutoValor.text =
-                produtoCarregado.valor.formataParaMoedaBrasileira()
+            activityDetalhesProdutoValor.text = produtoCarregado.valor.formataParaMoedaBrasileira()
         }
     }
-
 }
+

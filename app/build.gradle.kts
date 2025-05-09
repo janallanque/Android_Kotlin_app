@@ -1,25 +1,33 @@
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
     id("kotlin-parcelize")
+    id("com.google.devtools.ksp")
 }
 
 android {
-    namespace = "br.com.alura.orgs" // Adicionei esta linha
-    compileSdk = 35
-
-    ndkVersion = "35.0.0"
-    buildToolsVersion = "35.0.0"
+    namespace = "br.com.alura.orgs"
+    compileSdk = 36
+    ndkVersion = "36.0.0"
+    buildToolsVersion = "36.0.0"
 
     defaultConfig {
         applicationId = "br.com.alura.orgs"
         minSdk = 29
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += mapOf(
+                    "room.schemaLocation" to "$projectDir/schemas"
+                )
+            }
+        }
     }
 
     buildFeatures {
@@ -34,17 +42,14 @@ android {
             isShrinkResources = true
             proguardFiles.add(getDefaultProguardFile("proguard-android-optimize.txt"))
             isCrunchPngs = true
-
         }
         debug {
-            isCrunchPngs =
-                true // Desativa a otimização de PNGs no build de debug (geralmente para builds mais rápidos)
+            isCrunchPngs = false
         }
-
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.15"
+        kotlinCompilerExtensionVersion = "1.5.15" // Verifique a versão mais recente
     }
 
     compileOptions {
@@ -54,34 +59,56 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
-
+    ksp {
+        arg("room.schemaLocation", "$projectDir/schemas")
+    }
 }
 
+
 dependencies {
+    // Room
+    ksp(libs.androidx.room.room.compiler2)
+    implementation(libs.androidx.room.ktx)
+
+    // KSP
+    ksp(libs.symbol.processing)
+    implementation(libs.symbol.processing.api)
+    annotationProcessor(libs.androidx.room.room.compiler2)
+
+    // Kotlin
     implementation(libs.kotlin.stdlib)
-    implementation (libs.androidx.appcompat.v131)
-    implementation(libs.androidx.core.ktx)
+
+    // AndroidX
     implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.gridlayout)
     implementation(libs.androidx.legacy.support.v13)
-    implementation(libs.androidx.activity)
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.material3)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.material)
-    implementation(libs.coil.compose)
-    implementation(libs.coil.network.okhttp)
-    implementation(libs.coil3.coil.gif)
-    implementation(libs.support.annotations)
     implementation(libs.androidx.foundation.android)
-    implementation(libs.filament.android)
+    implementation(libs.androidx.annotation)
+
+    // Material
+    implementation(libs.material)
+    implementation(libs.androidx.material3)
+
+    // Coil
+    implementation(libs.coil)
+    implementation(libs.coil.gif.v260)
+
+    // Outros
+    implementation(libs.google.filament.android)
     implementation(libs.firebase.database.ktx)
+
+    // Testes
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    // Debug
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }

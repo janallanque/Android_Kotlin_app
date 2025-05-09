@@ -2,24 +2,22 @@ package br.com.alura.orgs.extensions
 
 import android.widget.ImageView
 import br.com.alura.orgs.R
-import coil3.ImageLoader
-import coil3.load
-import coil3.request.error
-import coil3.request.fallback
-import coil3.request.placeholder
+import coil.load
+
 
 fun ImageView.tentaCarregarImagem(
     url: String? = null,
     fallback: Int = R.drawable.produto_1,
 
-) {
+    ) {
     this.load(url) {
         apply {
-            fallback(fallback)
+            crossfade(true) // Anima a transição da imagem
             placeholder(R.drawable.placeholder)
-            error(R.drawable.erro)
-
+            fallback(fallback) // Se a URL for nula
+            error(R.drawable.erro) // Se der erro no carregamento
         }
     }
 }
+
 

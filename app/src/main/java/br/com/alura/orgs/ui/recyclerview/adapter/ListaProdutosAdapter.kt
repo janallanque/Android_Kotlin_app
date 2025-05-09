@@ -1,10 +1,15 @@
 package br.com.alura.orgs.ui.recyclerview.adapter
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
+import br.com.alura.orgs.R
 import br.com.alura.orgs.databinding.ProdutoItemBinding
 import br.com.alura.orgs.extensions.formataParaMoedaBrasileira
 import br.com.alura.orgs.extensions.tentaCarregarImagem
@@ -12,29 +17,32 @@ import br.com.alura.orgs.model.Produto
 
 class ListaProdutosAdapter(
     private val context: Context,
-    produtos: List<Produto>,
-    var quandoClicaNoItem: (produto: Produto) -> Unit = {}
+    produtos: List<Produto> = emptyList(),
+    var quandoClicaNoItem: (produto: Produto) -> Unit = {},
+    var quandoClicaEmEditar: (produto: Produto) -> Unit = {},
+    var quandoClicaEmRemover: (produto: Produto) -> Unit = {}
 ) : RecyclerView.Adapter<ListaProdutosAdapter.ViewHolder>() {
 
     private val produtos = produtos.toMutableList()
 
-    // utilização do inner na classe interna para acessar membros da classe superior
-    // nesse caso, a utilização da variável quandoClicaNoItem
         inner class ViewHolder(private val binding: ProdutoItemBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+        RecyclerView.ViewHolder(binding.root), PopupMenu.OnMenuItemClickListener {
 
-        // Considerando que o ViewHolder modifica de valor com base na posição
-        // é necessário o uso de properties mutáveis, para evitar nullables
-        // utilizamos o lateinit, properties que podem ser inicializar depois
         private lateinit var produto: Produto
 
         init {
-            // implementação do listener do adapter
             itemView.setOnClickListener {
-                // verificação da existência de valores em property lateinit
                 if (::produto.isInitialized) {
                     quandoClicaNoItem(produto)
                 }
+            }
+            itemView.setOnLongClickListener {
+                Log.d("Adapter", "Long click detectado")
+                val popup = PopupMenu(context, itemView)
+                popup.menuInflater.inflate(R.menu.menu_detalhes_produto, popup.menu)
+                popup.setOnMenuItemClickListener(this@ViewHolder)
+                popup.show()
+                true
             }
         }
 
@@ -59,7 +67,19 @@ class ListaProdutosAdapter(
 
             binding.imageView.tentaCarregarImagem(produto.imagem)
         }
-
+            override fun onMenuItemClick(item: MenuItem?): Boolean {
+                item?.let {
+                    when (it.itemId) {
+                        R.id.menu_detalhes_produto_editar   -> {
+                            quandoClicaEmEditar(produto)
+                        }
+                        R.id.menu_detalhes_produto_remover-> {
+                            quandoClicaEmRemover(produto)
+                        }
+                    }
+                }
+                return true
+            }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -75,6 +95,7 @@ class ListaProdutosAdapter(
 
     override fun getItemCount(): Int = produtos.size
 
+    @SuppressLint("NotifyDataSetChanged")
     fun atualiza(produtos: List<Produto>) {
         this.produtos.clear()
         this.produtos.addAll(produtos)

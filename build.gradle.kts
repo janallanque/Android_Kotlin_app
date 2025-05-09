@@ -1,28 +1,24 @@
+@file:Suppress("DEPRECATION")
+
 plugins {
-    // Esse bloco define quais plugins serão usados neste projeto.
-    // A versão do plugin android precisa ser especificada no classpath.
-    id("com.android.application") version "8.9.1" apply false
-    id("com.android.library") version "8.9.1" apply false
-    id("org.jetbrains.kotlin.android") version "2.1.10" apply false // Aqui
-    id("org.jetbrains.kotlin.plugin.compose") version "2.1.10" // this version matches your Kotlin version
+    id("com.android.application") version "8.4.2" apply false
+    id("com.android.library") version "8.4.2" apply false
+    id("org.jetbrains.kotlin.android") version "2.0.21" apply false
+    id("org.jetbrains.kotlin.plugin.compose") version "2.0.21"
+    id("com.google.devtools.ksp") version "2.0.21-1.0.27" apply false
 }
 
 buildscript {
-    // Este bloco configura o classpath para o plugin do Android.
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        // Aqui definimos o classpath para o plugin android.
-        classpath(libs.gradle) // Substitua 8.x.x pela versão mais recente
-        classpath(libs.kotlin.gradle.plugin) // Exemplo de versão do Kotlin
-
+        classpath(libs.gradle) // Versão fixa aqui
+        classpath(libs.kotlin.gradle.plugin) // Versão fixa aqui
     }
-
 }
 
-tasks.register("clean", Delete::class) {
-    // Define uma task "clean" para remover o diretório de build do projeto.
-    delete(rootProject)
+tasks.register<Delete>("clean") {
+    delete(rootProject.buildDir)
 }

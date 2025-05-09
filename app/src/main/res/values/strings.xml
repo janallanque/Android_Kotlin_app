@@ -22,4 +22,9 @@
     <string name="botao_novo_produto">Botão Novo Produto</string>
     <string name="cadastrar_produto">Cadastrar produto</string>
     <string name="imagem_do_produto_layout">Imagem do produto</string>
+    <string name="editar">Editar</string>
+    <string name="imagem_descricao">Imagem Descricao</string>
+    <string name="imagem_do_produto_detalhes">Imagem do produto</string>
+    <string name="imagem_detalhes_produto">Imagem do produto</string>
+    <string name="remover">Remover</string>
 </resources>

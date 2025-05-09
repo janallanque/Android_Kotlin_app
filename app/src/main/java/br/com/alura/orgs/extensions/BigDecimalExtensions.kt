@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package br.com.alura.orgs.extensions
 
 import java.math.BigDecimal
