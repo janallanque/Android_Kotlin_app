@@ -7,7 +7,7 @@ import coil.load
 
 fun ImageView.tentaCarregarImagem(
     url: String? = null,
-    fallback: Int = R.drawable.produto_1,
+    fallback: Int = R.drawable.montanha3,
 
     ) {
     this.load(url) {

@@ -27,4 +27,12 @@
     <string name="imagem_do_produto_detalhes">Imagem do produto</string>
     <string name="imagem_detalhes_produto">Imagem do produto</string>
     <string name="remover">Remover</string>
+    <string name="ordenar">ordenar</string>
+    <string name="nome_desc">nome desc</string>
+    <string name="nome_asc">nome asc</string>
+    <string name="descricao_desc">descricao desc</string>
+    <string name="descricao_asc">descricao asc</string>
+    <string name="valor_desc">valor desc</string>
+    <string name="valor_asc">valor asc</string>
+    <string name="sem_ordem">Sem ordem</string>
 </resources>

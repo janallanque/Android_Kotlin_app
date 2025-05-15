@@ -16,7 +16,7 @@
         app:title="@string/app_name"
         app:titleMarginEnd="0dp"
         app:titleMarginTop="24dp"
-        app:titleTextColor="?attr/colorOnPrimary" />
+        app:titleTextColor="?attr/colorOnPrimary"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
