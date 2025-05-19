@@ -64,16 +64,19 @@ android {
     }
 }
 
-
 dependencies {
+    //Migration
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+
     // Room
-    ksp(libs.androidx.room.room.compiler2)
+    ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
 
     // KSP
     ksp(libs.symbol.processing)
     implementation(libs.symbol.processing.api)
-    annotationProcessor(libs.androidx.room.room.compiler2)
+    annotationProcessor(libs.androidx.room.compiler)
 
     // Kotlin
     implementation(libs.kotlin.stdlib)
