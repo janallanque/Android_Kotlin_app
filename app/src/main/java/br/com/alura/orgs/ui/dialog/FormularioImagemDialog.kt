@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
+import br.com.alura.orgs.databinding.FormularioImagemBinding
 import br.com.alura.orgs.databinding.FormularioImagemBinding.inflate
 import br.com.alura.orgs.extensions.tentaCarregarImagem
 
@@ -13,6 +14,8 @@ class FormularioImagemDialog(private val context: Context) {
         urlPadrao: String? = null,
         quandoImagemCarregada: (imagem: String) -> Unit
     ) {
+        /*FormularioImagemBinding.inflate(LayoutInflater.from(context)).apply {  }*/ //verificar
+
         val binding = inflate(LayoutInflater.from(context)).apply {
                 urlPadrao?.let {
                     formularioImagemImageview.tentaCarregarImagem(it)

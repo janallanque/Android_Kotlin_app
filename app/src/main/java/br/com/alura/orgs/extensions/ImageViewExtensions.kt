@@ -12,10 +12,9 @@ fun ImageView.tentaCarregarImagem(
     ) {
     this.load(url) {
         apply {
-            crossfade(true) // Anima a transição da imagem
             placeholder(R.drawable.placeholder)
-            fallback(fallback) // Se a URL for nula
-            error(R.drawable.erro) // Se der erro no carregamento
+            fallback(fallback)
+            error(R.drawable.erro)
         }
     }
 }
