@@ -76,7 +76,6 @@ dependencies {
     // KSP
     ksp(libs.symbol.processing)
     implementation(libs.symbol.processing.api)
-    annotationProcessor(libs.androidx.room.compiler)
 
     // Kotlin
     implementation(libs.kotlin.stdlib)
@@ -87,7 +86,6 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.gridlayout)
-    implementation(libs.androidx.legacy.support.v13)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.tooling.preview)

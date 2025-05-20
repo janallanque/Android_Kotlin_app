@@ -4,7 +4,7 @@ plugins {
     id("com.android.application") version "8.4.2" apply false
     id("com.android.library") version "8.4.2" apply false
     id("org.jetbrains.kotlin.android") version "2.0.21" apply false
-    id("org.jetbrains.kotlin.plugin.compose") version "2.0.21"
+    id("org.jetbrains.kotlin.plugin.compose") version "2.0.21" apply false
     id("com.google.devtools.ksp") version "2.0.21-1.0.27" apply false
 }
 
@@ -14,8 +14,8 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath(libs.gradle) // Versão fixa aqui
-        classpath(libs.kotlin.gradle.plugin) // Versão fixa aqui
+        classpath(libs.gradle)
+        classpath(libs.kotlin.gradle.plugin)
     }
 }
 

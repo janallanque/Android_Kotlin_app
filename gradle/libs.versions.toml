@@ -24,9 +24,9 @@ lifecycleRuntimeKtxVersion = "2.9.0"
 recyclerview = "1.4.0"
 
 # Compose
-composeUi = "1.8.1"
+composeUi = "1.8.2"
 material3 = "1.3.2"
-foundationAndroid = "1.8.1"
+foundationAndroid = "1.8.2"
 
 # Coil
 coil = "2.5.0"
@@ -55,6 +55,7 @@ supportV4 = "28.0.0"
 
 # bibliotecas
 [libraries]
+
 # AndroidX
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }

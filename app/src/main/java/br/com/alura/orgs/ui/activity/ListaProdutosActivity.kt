@@ -6,9 +6,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import br.com.alura.orgs.R
 import br.com.alura.orgs.database.AppDatabase
 import br.com.alura.orgs.databinding.ActivityListaProdutosBinding
@@ -26,9 +24,13 @@ class ListaProdutosActivity : AppCompatActivity() {
         ActivityListaProdutosBinding.inflate(layoutInflater)
     }
 
-    private val dao by lazy {
+    private val produtoDao by lazy {
         val db = AppDatabase.instancia(this)
         db.produtoDao()
+    }
+
+    private val usuarioDao by lazy {
+        AppDatabase.instancia(this).usuarioDao()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,9 +41,14 @@ class ListaProdutosActivity : AppCompatActivity() {
         configuraFab()
 
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                dao.buscaTodos().collect { produtos ->
+            launch {
+                produtoDao.buscaTodos().collect { produtos ->
                     adapter.atualiza(produtos)
+                }
+            }
+            intent.getStringExtra("CHAVE_USUARIO_ID")?.let { usuarioId ->
+                usuarioDao.buscaPorId(usuarioId).collect {
+                    Log.i("ListaProdutos", "onCreate: $it")
                 }
             }
         }
@@ -51,7 +58,7 @@ class ListaProdutosActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         lifecycleScope.launch {
-            dao.buscaTodos().collect { produtos ->
+            produtoDao.buscaTodos().collect { produtos ->
                 adapter.atualiza(produtos)
             }
         }
@@ -65,10 +72,10 @@ class ListaProdutosActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         lifecycleScope.launch(Dispatchers.IO) {
             val produtosOrdenado = when (item.itemId) {
-                R.id.menu_lista_produtos_ordenar_nome_asc -> dao.buscaTodosOrdenadorPorNomeAsc()
-                R.id.menu_lista_produtos_ordenar_nome_desc -> dao.buscaTodosOrdenadorPorNomeDesc()
-                R.id.menu_lista_produtos_ordenar_valor_asc -> dao.buscaTodosOrdenadorPorValorAsc()
-                R.id.menu_lista_produtos_ordenar_valor_desc -> dao.buscaTodosOrdenadorPorValorDesc()
+                R.id.menu_lista_produtos_ordenar_nome_asc -> produtoDao.buscaTodosOrdenadorPorNomeAsc()
+                R.id.menu_lista_produtos_ordenar_nome_desc -> produtoDao.buscaTodosOrdenadorPorNomeDesc()
+                R.id.menu_lista_produtos_ordenar_valor_asc -> produtoDao.buscaTodosOrdenadorPorValorAsc()
+                R.id.menu_lista_produtos_ordenar_valor_desc -> produtoDao.buscaTodosOrdenadorPorValorDesc()
                 else -> null
             }
 
