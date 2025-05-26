@@ -40,8 +40,8 @@ class LoginActivity : AppCompatActivity() {
                     dataStore.edit { preferences ->
                         preferences[usuarioLogadoPreferences] = usuario.id
                     }
-                    vaiPara(ListaProdutosActivity::class.java) {
-                    }
+                    vaiPara(ListaProdutosActivity::class.java)
+                    finish()
                 } ?: Toast.makeText(
                     this@LoginActivity,
                     "Falha na autenticação",

@@ -6,10 +6,12 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.lifecycleScope
 import br.com.alura.orgs.R
 import br.com.alura.orgs.database.AppDatabase
 import br.com.alura.orgs.databinding.ActivityListaProdutosBinding
+import br.com.alura.orgs.extensions.vaiPara
 import br.com.alura.orgs.preferences.dataStore
 import br.com.alura.orgs.preferences.usuarioLogadoPreferences
 import br.com.alura.orgs.ui.recyclerview.adapter.ListaProdutosAdapter
@@ -50,15 +52,72 @@ class ListaProdutosActivity : AppCompatActivity() {
             }
             dataStore.data.collect { preferences ->
                 preferences[usuarioLogadoPreferences]?.let { usuarioId ->
-                    usuarioDao.buscaPorId(usuarioId).collect {
-                        Log.i("ListaProdutos", "onCreate: $it")
+                    launch {
+                        usuarioDao.buscaPorId(usuarioId).collect {
+                            Log.i("ListaProdutos", "onCreate: $it")
+                        }
                     }
-                }
+                } ?: vaiParaLogin()
             }
         }
     }
 
-    // Criação do menu suspenso de ordenar
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_lista_produtos, menu)
+        menuInflater.inflate(
+            R.menu.menu_lista_produtos_ordenar,
+            menu
+        ) // Adiciona o menu suspenso de ordenar
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_lista_produtos_sair_do_app -> {
+                lifecycleScope.launch {
+                    dataStore.edit { preferences ->
+                        preferences.remove(usuarioLogadoPreferences)
+                    }
+                    vaiParaLogin()
+                }
+                return true
+            }
+
+            R.id.menu_lista_produtos_ordenar_nome_asc,
+            R.id.menu_lista_produtos_ordenar_nome_desc,
+            R.id.menu_lista_produtos_ordenar_valor_asc,
+            R.id.menu_lista_produtos_ordenar_valor_desc,
+            R.id.menu_lista_produtos_ordenar_descricao_asc,
+            R.id.menu_lista_produtos_ordenar_descricao_desc -> {
+                lifecycleScope.launch(Dispatchers.IO) {
+                    val produtosOrdenado = when (item.itemId) {
+                        R.id.menu_lista_produtos_ordenar_nome_asc -> produtoDao.buscaTodosOrdenadorPorNomeAsc()
+                        R.id.menu_lista_produtos_ordenar_nome_desc -> produtoDao.buscaTodosOrdenadorPorNomeDesc()
+                        R.id.menu_lista_produtos_ordenar_valor_asc -> produtoDao.buscaTodosOrdenadorPorValorAsc()
+                        R.id.menu_lista_produtos_ordenar_valor_desc -> produtoDao.buscaTodosOrdenadorPorValorDesc()
+                        R.id.menu_lista_produtos_ordenar_descricao_asc -> produtoDao.buscaTodosOrdenadorPorDescricaoAsc()
+                        R.id.menu_lista_produtos_ordenar_descricao_desc -> produtoDao.buscaTodosOrdenadorPorDescricaoDesc()
+                        else -> null
+                    }
+
+                    produtosOrdenado?.let {
+                        withContext(Dispatchers.Main) {
+                            adapter.atualiza(it)
+                        }
+                    }
+                }
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun vaiParaLogin() {
+        vaiPara(LoginActivity::class.java) {
+        }
+        finish()
+    }
+
     override fun onResume() {
         super.onResume()
         lifecycleScope.launch {
@@ -67,34 +126,6 @@ class ListaProdutosActivity : AppCompatActivity() {
             }
         }
     }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_lista_produtos, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        lifecycleScope.launch(Dispatchers.IO) {
-            val produtosOrdenado = when (item.itemId) {
-                R.id.menu_lista_produtos_ordenar_nome_asc -> produtoDao.buscaTodosOrdenadorPorNomeAsc()
-                R.id.menu_lista_produtos_ordenar_nome_desc -> produtoDao.buscaTodosOrdenadorPorNomeDesc()
-                R.id.menu_lista_produtos_ordenar_valor_asc -> produtoDao.buscaTodosOrdenadorPorValorAsc()
-                R.id.menu_lista_produtos_ordenar_valor_desc -> produtoDao.buscaTodosOrdenadorPorValorDesc()
-                R.id.menu_lista_produtos_ordenar_descricao_asc -> produtoDao.buscaTodosOrdenadorPorDescricaoAsc()
-                R.id.menu_lista_produtos_ordenar_descricao_desc -> produtoDao.buscaTodosOrdenadorPorDescricaoDesc()
-                else -> null
-            }
-
-            produtosOrdenado?.let {
-                // Trocar de volta para a Main Thread para atualizar a UI
-                withContext(Dispatchers.Main) {
-                    adapter.atualiza(it)
-                }
-            }
-        }
-        return true
-    }
-    //Final do bloco do menu suspenso de ordenar
 
     private fun configuraFab() {
         val fab = binding.activityListaProdutosFab
