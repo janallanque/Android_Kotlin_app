@@ -10,6 +10,8 @@ import androidx.lifecycle.lifecycleScope
 import br.com.alura.orgs.R
 import br.com.alura.orgs.database.AppDatabase
 import br.com.alura.orgs.databinding.ActivityListaProdutosBinding
+import br.com.alura.orgs.preferences.dataStore
+import br.com.alura.orgs.preferences.usuarioLogadoPreferences
 import br.com.alura.orgs.ui.recyclerview.adapter.ListaProdutosAdapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -46,9 +48,11 @@ class ListaProdutosActivity : AppCompatActivity() {
                     adapter.atualiza(produtos)
                 }
             }
-            intent.getStringExtra("CHAVE_USUARIO_ID")?.let { usuarioId ->
-                usuarioDao.buscaPorId(usuarioId).collect {
-                    Log.i("ListaProdutos", "onCreate: $it")
+            dataStore.data.collect { preferences ->
+                preferences[usuarioLogadoPreferences]?.let { usuarioId ->
+                    usuarioDao.buscaPorId(usuarioId).collect {
+                        Log.i("ListaProdutos", "onCreate: $it")
+                    }
                 }
             }
         }
@@ -76,6 +80,8 @@ class ListaProdutosActivity : AppCompatActivity() {
                 R.id.menu_lista_produtos_ordenar_nome_desc -> produtoDao.buscaTodosOrdenadorPorNomeDesc()
                 R.id.menu_lista_produtos_ordenar_valor_asc -> produtoDao.buscaTodosOrdenadorPorValorAsc()
                 R.id.menu_lista_produtos_ordenar_valor_desc -> produtoDao.buscaTodosOrdenadorPorValorDesc()
+                R.id.menu_lista_produtos_ordenar_descricao_asc -> produtoDao.buscaTodosOrdenadorPorDescricaoAsc()
+                R.id.menu_lista_produtos_ordenar_descricao_desc -> produtoDao.buscaTodosOrdenadorPorDescricaoDesc()
                 else -> null
             }
 

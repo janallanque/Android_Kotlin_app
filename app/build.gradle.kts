@@ -8,26 +8,20 @@ plugins {
 
 android {
     namespace = "br.com.alura.orgs"
-    compileSdk = 36
-    ndkVersion = "36.0.0"
-    buildToolsVersion = "36.0.0"
+    compileSdk = 35
+    ndkVersion = "35.0.0"
+    buildToolsVersion = "35.0.0"
 
     defaultConfig {
         applicationId = "br.com.alura.orgs"
         minSdk = 29
-        targetSdk = 36
+        //noinspection OldTargetApi
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments += mapOf(
-                    "room.schemaLocation" to "$projectDir/schemas"
-                )
-            }
-        }
     }
 
     buildFeatures {
@@ -49,7 +43,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.15" // Verifique a versão mais recente
+        kotlinCompilerExtensionVersion = "1.9.25"
     }
 
     compileOptions {
@@ -79,6 +73,9 @@ dependencies {
 
     // Kotlin
     implementation(libs.kotlin.stdlib)
+
+    //Datastore
+    implementation(libs.androidx.datastore.preferences)
 
     // AndroidX
     implementation(libs.androidx.appcompat)
