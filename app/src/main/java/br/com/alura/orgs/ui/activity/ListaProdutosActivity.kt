@@ -12,10 +12,12 @@ import br.com.alura.orgs.R
 import br.com.alura.orgs.database.AppDatabase
 import br.com.alura.orgs.databinding.ActivityListaProdutosBinding
 import br.com.alura.orgs.extensions.vaiPara
+import br.com.alura.orgs.model.Produto
 import br.com.alura.orgs.preferences.dataStore
 import br.com.alura.orgs.preferences.usuarioLogadoPreferences
 import br.com.alura.orgs.ui.recyclerview.adapter.ListaProdutosAdapter
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -43,44 +45,32 @@ class ListaProdutosActivity : AppCompatActivity() {
         setContentView(binding.root)
         configuraRecyclerView()
         configuraFab()
-
         lifecycleScope.launch {
             launch {
-                produtoDao.buscaTodos().collect { produtos ->
-                    adapter.atualiza(produtos)
-                }
+                verificaUsuarioLogado()
             }
-            dataStore.data.collect { preferences ->
-                preferences[usuarioLogadoPreferences]?.let { usuarioId ->
-                    launch {
-                        usuarioDao.buscaPorId(usuarioId).collect {
-                            Log.i("ListaProdutos", "onCreate: $it")
-                        }
-                    }
-                } ?: vaiParaLogin()
-            }
+        }
+    }
+
+    private suspend fun verificaUsuarioLogado() {
+        dataStore.data.collect { preferences ->
+            preferences[usuarioLogadoPreferences]?.let { usuarioId ->
+                buscaUsuario(usuarioId)
+            } ?: vaiParaLogin()
         }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_lista_produtos, menu)
-        menuInflater.inflate(
-            R.menu.menu_lista_produtos_ordenar,
-            menu
-        ) // Adiciona o menu suspenso de ordenar
-        return true
+        menuInflater.inflate(R.menu.menu_lista_produtos_ordenar, menu)
+        return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
+        return when (item.itemId) {
             R.id.menu_lista_produtos_sair_do_app -> {
-                lifecycleScope.launch {
-                    dataStore.edit { preferences ->
-                        preferences.remove(usuarioLogadoPreferences)
-                    }
-                    vaiParaLogin()
-                }
-                return true
+                handleSairDoApp()
+                true
             }
 
             R.id.menu_lista_produtos_ordenar_nome_asc,
@@ -89,42 +79,71 @@ class ListaProdutosActivity : AppCompatActivity() {
             R.id.menu_lista_produtos_ordenar_valor_desc,
             R.id.menu_lista_produtos_ordenar_descricao_asc,
             R.id.menu_lista_produtos_ordenar_descricao_desc -> {
-                lifecycleScope.launch(Dispatchers.IO) {
-                    val produtosOrdenado = when (item.itemId) {
-                        R.id.menu_lista_produtos_ordenar_nome_asc -> produtoDao.buscaTodosOrdenadorPorNomeAsc()
-                        R.id.menu_lista_produtos_ordenar_nome_desc -> produtoDao.buscaTodosOrdenadorPorNomeDesc()
-                        R.id.menu_lista_produtos_ordenar_valor_asc -> produtoDao.buscaTodosOrdenadorPorValorAsc()
-                        R.id.menu_lista_produtos_ordenar_valor_desc -> produtoDao.buscaTodosOrdenadorPorValorDesc()
-                        R.id.menu_lista_produtos_ordenar_descricao_asc -> produtoDao.buscaTodosOrdenadorPorDescricaoAsc()
-                        R.id.menu_lista_produtos_ordenar_descricao_desc -> produtoDao.buscaTodosOrdenadorPorDescricaoDesc()
-                        else -> null
-                    }
+                handleOrdenarProdutos(item)
+                true
+            }
 
-                    produtosOrdenado?.let {
-                        withContext(Dispatchers.Main) {
-                            adapter.atualiza(it)
-                        }
-                    }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun handleSairDoApp() {
+        lifecycleScope.launch {
+            deslogaUsuario()
+        }
+    }
+
+    private fun handleOrdenarProdutos(item: MenuItem) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val produtosOrdenado = produtoOrdenado(item)
+            produtosOrdenado?.let {
+                withContext(Dispatchers.Main) {
+                    adapter.atualiza(it)
                 }
-                return true
             }
         }
-        return super.onOptionsItemSelected(item)
+    }
+
+    private fun buscaUsuario(usuarioId: String) {
+        lifecycleScope.launch {
+            usuarioDao.buscaPorId(usuarioId)
+                .firstOrNull()?.let {
+                    launch {
+                        buscaProdutoUsuario()
+                    }
+                }
+        }
+    }
+
+    private suspend fun buscaProdutoUsuario() {
+        produtoDao.buscaTodos().collect { produtos ->
+            adapter.atualiza(produtos)
+        }
+    }
+
+    private val ordemFuncoes = mapOf(
+        R.id.menu_lista_produtos_ordenar_nome_asc to { produtoDao.buscaTodosOrdenadorPorNomeAsc() },
+        R.id.menu_lista_produtos_ordenar_nome_desc to { produtoDao.buscaTodosOrdenadorPorNomeDesc() },
+        R.id.menu_lista_produtos_ordenar_valor_asc to { produtoDao.buscaTodosOrdenadorPorValorAsc() },
+        R.id.menu_lista_produtos_ordenar_valor_desc to { produtoDao.buscaTodosOrdenadorPorValorDesc() },
+        R.id.menu_lista_produtos_ordenar_descricao_asc to { produtoDao.buscaTodosOrdenadorPorDescricaoAsc() },
+        R.id.menu_lista_produtos_ordenar_descricao_desc to { produtoDao.buscaTodosOrdenadorPorDescricaoDesc() }
+    )
+
+    private fun produtoOrdenado(item: MenuItem): List<Produto>? {
+        return ordemFuncoes[item.itemId]?.invoke()
+    }
+
+    private suspend fun deslogaUsuario() {
+        dataStore.edit { preferences ->
+            preferences.remove(usuarioLogadoPreferences)
+        }
     }
 
     private fun vaiParaLogin() {
         vaiPara(LoginActivity::class.java) {
         }
         finish()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        lifecycleScope.launch {
-            produtoDao.buscaTodos().collect { produtos ->
-                adapter.atualiza(produtos)
-            }
-        }
     }
 
     private fun configuraFab() {
