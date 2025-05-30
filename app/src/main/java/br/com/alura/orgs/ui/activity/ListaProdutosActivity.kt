@@ -17,6 +17,7 @@ import br.com.alura.orgs.preferences.dataStore
 import br.com.alura.orgs.preferences.usuarioLogadoPreferences
 import br.com.alura.orgs.ui.recyclerview.adapter.ListaProdutosAdapter
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -37,6 +38,13 @@ class ListaProdutosActivity : AppCompatActivity() {
 
     private val usuarioDao by lazy {
         AppDatabase.instancia(this).usuarioDao()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        lifecycleScope.launch {
+            buscaProdutoUsuario()
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,13 +71,45 @@ class ListaProdutosActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_lista_produtos, menu)
         menuInflater.inflate(R.menu.menu_lista_produtos_ordenar, menu)
-        return super.onCreateOptionsMenu(menu)
+        menuInflater.inflate(R.menu.menu_busca_produto_por_nome, menu)
+
+        val searchItem = menu?.findItem(R.id.menu_busca_produto_por_nome)
+        val searchView = searchItem?.actionView as? androidx.appcompat.widget.SearchView
+
+        searchView?.queryHint = "Buscar por nome..."
+
+        searchView?.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                query?.let {
+                    lifecycleScope.launch {
+                        buscaProdutoPorNome(it)
+                    }
+                }
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                newText?.let {
+                    lifecycleScope.launch {
+                        buscaProdutoPorNome(it)
+                    }
+                }
+                return true
+            }
+        })
+
+        return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_lista_produtos_sair_do_app -> {
                 handleSairDoApp()
+                true
+            }
+
+            R.id.menu_busca_produto_por_nome ->{
+                handleBuscaProdutoPorNome(item)
                 true
             }
 
@@ -87,11 +127,31 @@ class ListaProdutosActivity : AppCompatActivity() {
         }
     }
 
+    private suspend fun buscaProdutoPorNome(nome: String) {
+        val produtos = withContext(Dispatchers.IO) {
+            produtoDao.buscaPorNome(nome).first()
+        }
+        adapter.atualiza(produtos)
+    }
+
+
+    private fun handleBuscaProdutoPorNome(item: MenuItem) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val buscaPorNome = buscaPorNome(item)
+            buscaPorNome?.let {
+                withContext(Dispatchers.Main) {
+                    adapter.atualiza(it)
+                }
+            }
+        }
+    }
+
     private fun handleSairDoApp() {
         lifecycleScope.launch {
             deslogaUsuario()
         }
     }
+
 
     private fun handleOrdenarProdutos(item: MenuItem) {
         lifecycleScope.launch(Dispatchers.IO) {
@@ -131,6 +191,10 @@ class ListaProdutosActivity : AppCompatActivity() {
     )
 
     private fun produtoOrdenado(item: MenuItem): List<Produto>? {
+        return ordemFuncoes[item.itemId]?.invoke()
+    }
+
+    private fun buscaPorNome(item: MenuItem): List<Produto>? {
         return ordemFuncoes[item.itemId]?.invoke()
     }
 

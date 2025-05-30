@@ -43,4 +43,6 @@
     <string name="orgs">Orgs</string>
     <string name="imagem_do_logo">imagem_do_logo</string>
     <string name="sair_do_app">sair_do_app</string>
+    <string name="digite_o_nome_do_produto">Digite o nome do produto</string>
+    <string name="buscar">Buscar</string>
 </resources>

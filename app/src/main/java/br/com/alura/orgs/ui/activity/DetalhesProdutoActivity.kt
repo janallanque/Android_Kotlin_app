@@ -110,4 +110,3 @@ class DetalhesProdutoActivity : AppCompatActivity() {
         }
     }
 }
-

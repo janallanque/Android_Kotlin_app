@@ -20,3 +20,5 @@ fun ImageView.tentaCarregarImagem(
 }
 
 
+
+
