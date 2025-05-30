@@ -6,7 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import br.com.alura.orgs.databinding.FormularioImagemBinding.inflate
 import br.com.alura.orgs.extensions.tentaCarregarImagem
-import br.com.alura.orgs.ui.activity.ImagensFrutasTeste
+import br.com.alura.orgs.ui.activity.ImagensFrutasTesteActivity
 
 class FormularioImagemDialog(private val context: Context) {
 
@@ -23,7 +23,7 @@ class FormularioImagemDialog(private val context: Context) {
             formularioImagemBotaoCarregar.setOnClickListener {
                 val entrada = formularioImagemUrl.text.toString().trim()
 
-                val imagemDaLista = ImagensFrutasTeste().buscarImagemPorNome(entrada).firstOrNull()
+                val imagemDaLista = ImagensFrutasTesteActivity().buscarImagemPorNome(entrada).firstOrNull()
 
                 if (imagemDaLista != null) {
                     // É um nome de fruta conhecido

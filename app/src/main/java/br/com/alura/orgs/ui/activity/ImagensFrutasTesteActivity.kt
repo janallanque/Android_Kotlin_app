@@ -1,6 +1,6 @@
 package br.com.alura.orgs.ui.activity
 
-class ImagensFrutasTeste {
+class ImagensFrutasTesteActivity {
 
     @Deprecated("Use getCrunchPngs() instead", ReplaceWith("getCrunchPngs()"))
     fun getCrunchImages(): List<String> {
