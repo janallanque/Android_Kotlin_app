@@ -5,40 +5,32 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
-import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.lifecycleScope
 import br.com.alura.orgs.R
 import br.com.alura.orgs.database.AppDatabase
 import br.com.alura.orgs.databinding.ActivityListaProdutosBinding
 import br.com.alura.orgs.extensions.vaiPara
 import br.com.alura.orgs.model.Produto
-import br.com.alura.orgs.preferences.dataStore
-import br.com.alura.orgs.preferences.usuarioLogadoPreferences
 import br.com.alura.orgs.ui.recyclerview.adapter.ListaProdutosAdapter
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 private const val TAG = "ListaProdutosActivity"
 
-class ListaProdutosActivity : AppCompatActivity() {
+class ListaProdutosActivity : UsuarioBaseActivity() {
 
     private val adapter = ListaProdutosAdapter(context = this, produtos = emptyList())
     private val binding by lazy {
         ActivityListaProdutosBinding.inflate(layoutInflater)
     }
-
     private val produtoDao by lazy {
         val db = AppDatabase.instancia(this)
         db.produtoDao()
     }
 
-    private val usuarioDao by lazy {
-        AppDatabase.instancia(this).usuarioDao()
-    }
 
     override fun onResume() {
         super.onResume()
@@ -55,16 +47,13 @@ class ListaProdutosActivity : AppCompatActivity() {
         configuraFab()
         lifecycleScope.launch {
             launch {
-                verificaUsuarioLogado()
+                usuario
+                    .filterNotNull()
+                    .collect {
+                        Log.i("ListaProdutos", "onCreate: $it")
+                        buscaProdutoUsuario()
+                    }
             }
-        }
-    }
-
-    private suspend fun verificaUsuarioLogado() {
-        dataStore.data.collect { preferences ->
-            preferences[usuarioLogadoPreferences]?.let { usuarioId ->
-                buscaUsuario(usuarioId)
-            } ?: vaiParaLogin()
         }
     }
 
@@ -78,7 +67,8 @@ class ListaProdutosActivity : AppCompatActivity() {
 
         searchView?.queryHint = "Buscar por nome..."
 
-        searchView?.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
+        searchView?.setOnQueryTextListener(object :
+            androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 query?.let {
                     lifecycleScope.launch {
@@ -102,13 +92,12 @@ class ListaProdutosActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_lista_produtos_sair_do_app -> {
-                handleSairDoApp()
-                true
+        when (item.itemId) {
+            R.id.menu_lista_produtos_perfil_usuario -> {
+                vaiPara(PerfilUsuarioActivity::class.java)
             }
 
-            R.id.menu_busca_produto_por_nome ->{
+            R.id.menu_busca_produto_por_nome -> {
                 handleBuscaProdutoPorNome(item)
                 true
             }
@@ -125,6 +114,7 @@ class ListaProdutosActivity : AppCompatActivity() {
 
             else -> super.onOptionsItemSelected(item)
         }
+        return super.onOptionsItemSelected(item)
     }
 
     private suspend fun buscaProdutoPorNome(nome: String) {
@@ -133,6 +123,7 @@ class ListaProdutosActivity : AppCompatActivity() {
         }
         adapter.atualiza(produtos)
     }
+
 
 
     private fun handleBuscaProdutoPorNome(item: MenuItem) {
@@ -146,13 +137,6 @@ class ListaProdutosActivity : AppCompatActivity() {
         }
     }
 
-    private fun handleSairDoApp() {
-        lifecycleScope.launch {
-            deslogaUsuario()
-        }
-    }
-
-
     private fun handleOrdenarProdutos(item: MenuItem) {
         lifecycleScope.launch(Dispatchers.IO) {
             val produtosOrdenado = produtoOrdenado(item)
@@ -161,17 +145,6 @@ class ListaProdutosActivity : AppCompatActivity() {
                     adapter.atualiza(it)
                 }
             }
-        }
-    }
-
-    private fun buscaUsuario(usuarioId: String) {
-        lifecycleScope.launch {
-            usuarioDao.buscaPorId(usuarioId)
-                .firstOrNull()?.let {
-                    launch {
-                        buscaProdutoUsuario()
-                    }
-                }
         }
     }
 
@@ -196,18 +169,6 @@ class ListaProdutosActivity : AppCompatActivity() {
 
     private fun buscaPorNome(item: MenuItem): List<Produto>? {
         return ordemFuncoes[item.itemId]?.invoke()
-    }
-
-    private suspend fun deslogaUsuario() {
-        dataStore.edit { preferences ->
-            preferences.remove(usuarioLogadoPreferences)
-        }
-    }
-
-    private fun vaiParaLogin() {
-        vaiPara(LoginActivity::class.java) {
-        }
-        finish()
     }
 
     private fun configuraFab() {

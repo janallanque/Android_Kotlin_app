@@ -27,6 +27,9 @@ class ImagensFrutasTesteActivity {
         "abacaxi" to listOf(
             "https://www.gebon.com.br/image/media/_00200/251/picole-gefrutti-abacaxi.png"
         ),
+        "uva" to listOf(
+            "https://static.vecteezy.com/system/resources/previews/036/706/310/non_2x/ai-generated-purple-grapes-with-leaves-on-transparent-background-ai-generated-free-png.png"
+        ),
         "pera" to listOf(
             "https://s3-sa-east-1.amazonaws.com/superimg/img.produtos/645183/645/img_500_1.png"
         ),

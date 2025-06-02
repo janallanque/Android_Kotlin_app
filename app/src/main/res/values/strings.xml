@@ -45,4 +45,6 @@
     <string name="sair_do_app">sair_do_app</string>
     <string name="digite_o_nome_do_produto">Digite o nome do produto</string>
     <string name="buscar">Buscar</string>
+    <string name="perfil_do_usuario">Perfil do usuário</string>
+    <string name="textview">TextView</string>
 </resources>
