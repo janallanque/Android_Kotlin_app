@@ -5,7 +5,7 @@
         android:id="@+id/menu_lista_produtos_ordenar"
         android:icon="@drawable/ic_action_ordenar"
         android:title="@string/ordenar"
-        app:showAsAction="ifRoom">
+        app:showAsAction="always">
         <menu>
             <item
                 android:id="@+id/menu_lista_produtos_ordenar_nome_desc"

@@ -47,4 +47,6 @@
     <string name="buscar">Buscar</string>
     <string name="perfil_do_usuario">Perfil do usuário</string>
     <string name="textview">TextView</string>
+    <string name="todos_os_produtos">Todos os produtos</string>
+    <string name="produto_por_id_usuario">produto por id usuario</string>
 </resources>

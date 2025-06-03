@@ -6,5 +6,12 @@
         android:id="@+id/menu_lista_produtos_perfil_usuario"
         android:icon="@drawable/ic_action_perfil"
         android:title="@string/perfil_do_usuario"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/menu_lista_produtos_todos_produtos"
+        android:icon="@drawable/ic_action_menu_lista_produtos_todos_produtos"
+        android:title="@string/todos_os_produtos"
+        app:showAsAction="ifRoom|collapseActionView" />
+
 </menu>

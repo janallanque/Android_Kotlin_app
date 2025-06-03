@@ -39,7 +39,7 @@ class ImagensFrutasTesteActivity {
         "maca" to listOf(
             "https://static.vecteezy.com/system/resources/thumbnails/023/290/773/small_2x/fresh-red-apple-isolated-on-transparent-background-generative-ai-png.png"
         ),
-        "maca_verde" to listOf(
+        "maca-verde" to listOf(
             "https://static.vecteezy.com/system/resources/thumbnails/040/350/603/small/ai-generated-fresh-green-apple-leaf-free-png.png"
         ),
         "morango" to listOf(
