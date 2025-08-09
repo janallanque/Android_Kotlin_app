@@ -8,15 +8,15 @@ plugins {
 
 android {
     namespace = "br.com.alura.orgs"
-    compileSdk = 35
-    ndkVersion = "35.0.0"
-    buildToolsVersion = "35.0.0"
+    compileSdk = 36
+    ndkVersion = "36.0.0"
+    buildToolsVersion = "36.0.0"
 
     defaultConfig {
         applicationId = "br.com.alura.orgs"
         minSdk = 29
         //noinspection OldTargetApi
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
